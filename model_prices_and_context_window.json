@@ -30579,6 +30579,170 @@
         "output_cost_per_token": 2e-07,
         "supports_system_messages": true
     },
+    "opencode-go/deepseek-v4-flash": {
+        "cache_read_input_token_cost": 2.8e-09,
+        "input_cost_per_token": 1.4e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 2.8e-07
+    },
+    "opencode-go/deepseek-v4-pro": {
+        "cache_read_input_token_cost": 3.625e-09,
+        "input_cost_per_token": 4.35e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 8.7e-07
+    },
+    "opencode-go/glm-5.1": {
+        "cache_read_input_token_cost": 2.6e-07,
+        "input_cost_per_token": 1.4e-06,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 4.4e-06
+    },
+    "opencode-go/glm-5.2": {
+        "cache_read_input_token_cost": 2.6e-07,
+        "input_cost_per_token": 1.4e-06,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 4.4e-06
+    },
+    "opencode-go/grok-4.5": {
+        "cache_read_input_token_cost": 3e-07,
+        "input_cost_per_token": 2e-06,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 6e-06
+    },
+    "opencode-go/hy3": {
+        "cache_read_input_token_cost": 3.5e-08,
+        "input_cost_per_token": 1.4e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 5.8e-07
+    },
+    "opencode-go/kimi-k2.6": {
+        "cache_read_input_token_cost": 1.6e-07,
+        "input_cost_per_token": 9.5e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 4e-06
+    },
+    "opencode-go/kimi-k2.7-code": {
+        "cache_read_input_token_cost": 1.9e-07,
+        "input_cost_per_token": 9.5e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 4e-06
+    },
+    "opencode-go/kimi-k3": {
+        "cache_read_input_token_cost": 3e-07,
+        "input_cost_per_token": 3e-06,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 1.5e-05
+    },
+    "opencode-go/mimo-v2.5": {
+        "cache_read_input_token_cost": 2.8e-09,
+        "input_cost_per_token": 1.4e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 2.8e-07
+    },
+    "opencode-go/mimo-v2.5-pro": {
+        "cache_read_input_token_cost": 3.625e-09,
+        "input_cost_per_token": 4.35e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 8.7e-07
+    },
+    "opencode-go/minimax-m2.7": {
+        "cache_creation_input_token_cost": 3.75e-07,
+        "cache_read_input_token_cost": 6e-08,
+        "input_cost_per_token": 3e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 1.2e-06
+    },
+    "opencode-go/minimax-m3": {
+        "cache_read_input_token_cost": 6e-08,
+        "input_cost_per_token": 3e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 1.2e-06
+    },
+    "opencode-go/qwen3.6-plus": {
+        "cache_creation_input_token_cost": 6.25e-07,
+        "cache_read_input_token_cost": 5e-08,
+        "input_cost_per_token": 5e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 3e-06
+    },
+    "opencode-go/qwen3.7-max": {
+        "cache_creation_input_token_cost": 3.125e-06,
+        "cache_read_input_token_cost": 5e-07,
+        "input_cost_per_token": 2.5e-06,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 7.5e-06
+    },
+    "opencode-go/qwen3.7-plus": {
+        "cache_creation_input_token_cost": 5e-07,
+        "cache_read_input_token_cost": 4e-08,
+        "input_cost_per_token": 4e-07,
+        "litellm_provider": "openai",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 1.6e-06
+    },
     "openrouter/anthropic/claude-3-haiku": {
         "input_cost_per_image": 0.0004,
         "input_cost_per_token": 2.5e-07,

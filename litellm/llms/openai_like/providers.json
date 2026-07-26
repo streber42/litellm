@@ -1,4 +1,16 @@
 {
+  "opencode-go": {
+    "base_url": "https://opencode.ai/zen/go/v1",
+    "api_key_env": "OPENCODE_API_KEY",
+    "api_base_env": "OPENCODE_BASE_URL",
+    "param_mappings": {
+      "max_completion_tokens": "max_tokens"
+    },
+    "supported_endpoints": ["/v1/chat/completions", "/v1/messages"],
+    "special_handling": {
+      "convert_content_list_to_string": true
+    }
+  },
   "publicai": {
     "base_url": "https://api.publicai.co/v1",
     "api_key_env": "PUBLICAI_API_KEY",

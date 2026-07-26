@@ -3687,6 +3687,7 @@ class LlmProviders(str, Enum):
     PINSTRIPES = "pinstripes"
     DARKBLOOM = "darkbloom"
     META = "meta"
+    OPENCODE_GO = "opencode-go"
     LITELLM_AGENT = "litellm_agent"
     CURSOR = "cursor"
     BEDROCK_MANTLE = "bedrock_mantle"
