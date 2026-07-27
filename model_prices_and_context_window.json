@@ -30582,7 +30582,7 @@
     "opencode-go/deepseek-v4-flash": {
         "cache_read_input_token_cost": 2.8e-09,
         "input_cost_per_token": 1.4e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30592,7 +30592,7 @@
     "opencode-go/deepseek-v4-pro": {
         "cache_read_input_token_cost": 3.625e-09,
         "input_cost_per_token": 4.35e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30602,7 +30602,7 @@
     "opencode-go/glm-5.1": {
         "cache_read_input_token_cost": 2.6e-07,
         "input_cost_per_token": 1.4e-06,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30612,7 +30612,7 @@
     "opencode-go/glm-5.2": {
         "cache_read_input_token_cost": 2.6e-07,
         "input_cost_per_token": 1.4e-06,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30622,7 +30622,7 @@
     "opencode-go/grok-4.5": {
         "cache_read_input_token_cost": 3e-07,
         "input_cost_per_token": 2e-06,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30632,7 +30632,7 @@
     "opencode-go/hy3": {
         "cache_read_input_token_cost": 3.5e-08,
         "input_cost_per_token": 1.4e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30642,7 +30642,7 @@
     "opencode-go/kimi-k2.6": {
         "cache_read_input_token_cost": 1.6e-07,
         "input_cost_per_token": 9.5e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30652,7 +30652,7 @@
     "opencode-go/kimi-k2.7-code": {
         "cache_read_input_token_cost": 1.9e-07,
         "input_cost_per_token": 9.5e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30662,7 +30662,7 @@
     "opencode-go/kimi-k3": {
         "cache_read_input_token_cost": 3e-07,
         "input_cost_per_token": 3e-06,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30672,7 +30672,7 @@
     "opencode-go/mimo-v2.5": {
         "cache_read_input_token_cost": 2.8e-09,
         "input_cost_per_token": 1.4e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30682,7 +30682,7 @@
     "opencode-go/mimo-v2.5-pro": {
         "cache_read_input_token_cost": 3.625e-09,
         "input_cost_per_token": 4.35e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30693,7 +30693,7 @@
         "cache_creation_input_token_cost": 3.75e-07,
         "cache_read_input_token_cost": 6e-08,
         "input_cost_per_token": 3e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30703,7 +30703,18 @@
     "opencode-go/minimax-m3": {
         "cache_read_input_token_cost": 6e-08,
         "input_cost_per_token": 3e-07,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 131072,
+        "max_tokens": 131072,
+        "mode": "chat",
+        "output_cost_per_token": 1.2e-06
+    },
+    "opencode-go/minimax-m2.5": {
+        "cache_creation_input_token_cost": 3.75e-07,
+        "cache_read_input_token_cost": 6e-08,
+        "input_cost_per_token": 3e-07,
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30712,20 +30723,24 @@
     },
     "opencode-go/qwen3.6-plus": {
         "cache_creation_input_token_cost": 6.25e-07,
+        "cache_creation_input_token_cost_above_256k_tokens": 2.5e-06,
         "cache_read_input_token_cost": 5e-08,
+        "cache_read_input_token_cost_above_256k_tokens": 2e-07,
         "input_cost_per_token": 5e-07,
-        "litellm_provider": "openai",
-        "max_input_tokens": 131072,
+        "input_cost_per_token_above_256k_tokens": 2e-06,
+        "litellm_provider": "opencode-go",
+        "max_input_tokens": 524288,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
         "mode": "chat",
-        "output_cost_per_token": 3e-06
+        "output_cost_per_token": 3e-06,
+        "output_cost_per_token_above_256k_tokens": 6e-06
     },
     "opencode-go/qwen3.7-max": {
         "cache_creation_input_token_cost": 3.125e-06,
         "cache_read_input_token_cost": 5e-07,
         "input_cost_per_token": 2.5e-06,
-        "litellm_provider": "openai",
+        "litellm_provider": "opencode-go",
         "max_input_tokens": 131072,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
@@ -30734,14 +30749,18 @@
     },
     "opencode-go/qwen3.7-plus": {
         "cache_creation_input_token_cost": 5e-07,
+        "cache_creation_input_token_cost_above_256k_tokens": 1.5e-06,
         "cache_read_input_token_cost": 4e-08,
+        "cache_read_input_token_cost_above_256k_tokens": 1.2e-07,
         "input_cost_per_token": 4e-07,
-        "litellm_provider": "openai",
-        "max_input_tokens": 131072,
+        "input_cost_per_token_above_256k_tokens": 1.2e-06,
+        "litellm_provider": "opencode-go",
+        "max_input_tokens": 524288,
         "max_output_tokens": 131072,
         "max_tokens": 131072,
         "mode": "chat",
-        "output_cost_per_token": 1.6e-06
+        "output_cost_per_token": 1.6e-06,
+        "output_cost_per_token_above_256k_tokens": 4.8e-06
     },
     "openrouter/anthropic/claude-3-haiku": {
         "input_cost_per_image": 0.0004,
