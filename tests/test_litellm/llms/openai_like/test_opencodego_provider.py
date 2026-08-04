@@ -147,3 +147,81 @@ def test_opencodego_router_config():
 
     assert len(router.model_list) == 1
     assert router.model_list[0]["model_name"] == "opencode-glm"
+
+
+def test_opencodego_chat_endpoint_selection():
+    """Test that OpenAI-style models resolve to /chat/completions"""
+    from litellm.llms.openai_like.json_loader import JSONProviderRegistry
+    from litellm.llms.openai_like.dynamic_config import create_config_class, _resolve_endpoint
+
+    provider = JSONProviderRegistry.get("opencode-go")
+    config_class = create_config_class(provider)
+    cfg = config_class()
+
+    url = cfg.get_complete_url(
+        api_base=None, api_key=None, model="glm-5.2",
+        optional_params={}, litellm_params={},
+    )
+    assert url == OPENCODEGO_CHAT_URL
+
+
+def test_opencodego_messages_endpoint_selection():
+    """Test that Anthropic-style models resolve to /messages"""
+    from litellm.llms.openai_like.json_loader import JSONProviderRegistry
+    from litellm.llms.openai_like.dynamic_config import create_config_class
+
+    provider = JSONProviderRegistry.get("opencode-go")
+    config_class = create_config_class(provider)
+    cfg = config_class()
+
+    for model in ("minimax-m3", "qwen3.7-max", "qwen3.6-plus"):
+        url = cfg.get_complete_url(
+            api_base=None, api_key=None, model=model,
+            optional_params={}, litellm_params={},
+        )
+        assert url == OPENCODEGO_MESSAGES_URL, f"{model} should use /messages"
+
+
+def test_opencodego_custom_api_base_with_endpoint_respected():
+    """Test that a caller-supplied api_base already ending in an endpoint is not overwritten"""
+    from litellm.llms.openai_like.json_loader import JSONProviderRegistry
+    from litellm.llms.openai_like.dynamic_config import create_config_class
+
+    provider = JSONProviderRegistry.get("opencode-go")
+    config_class = create_config_class(provider)
+    cfg = config_class()
+
+    # Explicit /messages on custom base should pass through
+    url = cfg.get_complete_url(
+        api_base="https://custom.opencode.ai/v1/messages",
+        api_key=None, model="minimax-m3",
+        optional_params={}, litellm_params={},
+    )
+    assert url == "https://custom.opencode.ai/v1/messages"
+
+    # Explicit /chat/completions on custom base should pass through
+    url = cfg.get_complete_url(
+        api_base="https://custom.opencode.ai/v1/chat/completions",
+        api_key=None, model="glm-5.2",
+        optional_params={}, litellm_params={},
+    )
+    assert url == "https://custom.opencode.ai/v1/chat/completions"
+
+
+def test_opencodego_messages_models():
+    """Test that _resolve_endpoint routes known messages models"""
+    from litellm.llms.openai_like.dynamic_config import _resolve_endpoint, _MESSAGES_MODELS
+
+    # Messages models should get /messages
+    for model in _MESSAGES_MODELS:
+        url = _resolve_endpoint(OPENCODEGO_BASE_URL, model, "opencode-go")
+        assert url == OPENCODEGO_MESSAGES_URL, f"{model}"
+
+    # Chat models should get /chat/completions
+    for model in ("glm-5.2", "grok-4.5", "kimi-k3", "deepseek-v4-flash"):
+        url = _resolve_endpoint(OPENCODEGO_BASE_URL, model, "opencode-go")
+        assert url == OPENCODEGO_CHAT_URL, f"{model}"
+
+    # Non-opencode providers always get /chat/completions
+    url = _resolve_endpoint(OPENCODEGO_BASE_URL, "minimax-m3", "some-other-provider")
+    assert url == OPENCODEGO_CHAT_URL

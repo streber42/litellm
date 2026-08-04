@@ -17,6 +17,47 @@ from litellm.types.llms.openai import AllMessageValues
 from .json_loader import SimpleProviderConfig
 
 
+# Endpoint routing for providers that support multiple endpoints
+_MESSAGES_MODELS: set[str] = frozenset(
+    {
+        "minimax-m3",
+        "minimax-m2.7",
+        "minimax-m2.5",
+        "qwen3.8-max",
+        "qwen3.7-max",
+        "qwen3.7-plus",
+        "qwen3.6-plus",
+    }
+)
+
+
+def _resolve_endpoint(api_base: str | None, model: str, provider_slug: str) -> str:
+    """Select the correct endpoint suffix based on model name.
+
+    Some providers (e.g. opencode-go) serve different model families on
+    different endpoint paths — chat completions for OpenAI-style models,
+    Anthropic /messages for others.
+    """
+    if api_base is None:
+        return ""
+
+    # Strip trailing slash for comparison
+    clean = api_base.rstrip("/")
+
+    # If caller already specified an endpoint, honour it
+    if any(clean.endswith(suffix) for suffix in ("/chat/completions", "/messages", "/responses")):
+        return clean
+
+    # Default: chat/completions
+    default = f"{clean}/chat/completions"
+
+    # Override for models that require Anthropic /messages
+    if provider_slug == "opencode-go" and model in _MESSAGES_MODELS:
+        return f"{clean}/messages"
+
+    return default
+
+
 def create_config_class(provider: SimpleProviderConfig):
     """Generate config class dynamically from JSON configuration"""
 
@@ -84,10 +125,7 @@ def create_config_class(provider: SimpleProviderConfig):
             if api_base is None:
                 raise ValueError(f"api_base is required for provider {provider.slug}")
 
-            if not api_base.endswith("/chat/completions"):
-                api_base = f"{api_base}/chat/completions"
-
-            return api_base
+            return _resolve_endpoint(api_base, model, provider.slug)
 
         def get_supported_openai_params(self, model: str) -> list:
             """Get supported OpenAI params, excluding tool-related params for models
