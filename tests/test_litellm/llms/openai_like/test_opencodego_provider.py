@@ -2,10 +2,6 @@
 Unit tests for the OpenCode Go OpenAI-like provider.
 """
 
-import os
-
-import pytest
-
 from litellm.llms.openai_like.json_loader import JSONProviderRegistry
 from litellm.llms.openai_like.dynamic_config import create_config_class
 
@@ -60,9 +56,7 @@ def test_opencodego_resolves_env_api_key(monkeypatch):
 def test_opencodego_api_base_override():
     """Test that an explicit api_base overrides the default"""
     config = _get_config()
-    api_base, api_key = config._get_openai_compatible_provider_info(
-        "https://custom.opencode.ai/v1", "sk-test"
-    )
+    api_base, api_key = config._get_openai_compatible_provider_info("https://custom.opencode.ai/v1", "sk-test")
     assert api_base == "https://custom.opencode.ai/v1"
     assert api_key == "sk-test"
 
@@ -152,15 +146,18 @@ def test_opencodego_router_config():
 def test_opencodego_chat_endpoint_selection():
     """Test that OpenAI-style models resolve to /chat/completions"""
     from litellm.llms.openai_like.json_loader import JSONProviderRegistry
-    from litellm.llms.openai_like.dynamic_config import create_config_class, _resolve_endpoint
+    from litellm.llms.openai_like.dynamic_config import create_config_class
 
     provider = JSONProviderRegistry.get("opencode-go")
     config_class = create_config_class(provider)
     cfg = config_class()
 
     url = cfg.get_complete_url(
-        api_base=None, api_key=None, model="glm-5.2",
-        optional_params={}, litellm_params={},
+        api_base=None,
+        api_key=None,
+        model="glm-5.2",
+        optional_params={},
+        litellm_params={},
     )
     assert url == OPENCODEGO_CHAT_URL
 
@@ -176,8 +173,11 @@ def test_opencodego_messages_endpoint_selection():
 
     for model in ("minimax-m3", "qwen3.7-max", "qwen3.6-plus"):
         url = cfg.get_complete_url(
-            api_base=None, api_key=None, model=model,
-            optional_params={}, litellm_params={},
+            api_base=None,
+            api_key=None,
+            model=model,
+            optional_params={},
+            litellm_params={},
         )
         assert url == OPENCODEGO_MESSAGES_URL, f"{model} should use /messages"
 
@@ -194,26 +194,38 @@ def test_opencodego_custom_api_base_with_endpoint_respected():
     # Explicit /messages on custom base should pass through
     url = cfg.get_complete_url(
         api_base="https://custom.opencode.ai/v1/messages",
-        api_key=None, model="minimax-m3",
-        optional_params={}, litellm_params={},
+        api_key=None,
+        model="minimax-m3",
+        optional_params={},
+        litellm_params={},
     )
     assert url == "https://custom.opencode.ai/v1/messages"
 
     # Explicit /chat/completions on custom base should pass through
     url = cfg.get_complete_url(
         api_base="https://custom.opencode.ai/v1/chat/completions",
-        api_key=None, model="glm-5.2",
-        optional_params={}, litellm_params={},
+        api_key=None,
+        model="glm-5.2",
+        optional_params={},
+        litellm_params={},
     )
     assert url == "https://custom.opencode.ai/v1/chat/completions"
 
 
 def test_opencodego_messages_models():
     """Test that _resolve_endpoint routes known messages models"""
-    from litellm.llms.openai_like.dynamic_config import _resolve_endpoint, _MESSAGES_MODELS
+    from litellm.llms.openai_like.dynamic_config import _OPENCODE_ENDPOINTS, _resolve_endpoint
+
+    messages_models = next(
+        models
+        for slug, endpoints in _OPENCODE_ENDPOINTS
+        if slug == "opencode-go"
+        for endpoint, models in endpoints
+        if endpoint == "messages"
+    )
 
     # Messages models should get /messages
-    for model in _MESSAGES_MODELS:
+    for model in messages_models:
         url = _resolve_endpoint(OPENCODEGO_BASE_URL, model, "opencode-go")
         assert url == OPENCODEGO_MESSAGES_URL, f"{model}"
 
@@ -225,3 +237,40 @@ def test_opencodego_messages_models():
     # Non-opencode providers always get /chat/completions
     url = _resolve_endpoint(OPENCODEGO_BASE_URL, "minimax-m3", "some-other-provider")
     assert url == OPENCODEGO_CHAT_URL
+
+
+def test_opencodego_responses_endpoint_selection():
+    """Go's gpt-5.6-luna routes to /responses, not /chat/completions."""
+    from litellm.llms.openai_like.dynamic_config import _resolve_endpoint
+
+    url = _resolve_endpoint(OPENCODEGO_BASE_URL, "gpt-5.6-luna", "opencode-go")
+    assert url == "https://opencode.ai/zen/go/v1/responses"
+
+
+def test_opencodezen_provider_registered():
+    """opencode-zen must be a registered provider in the openai_like registry."""
+    provider = JSONProviderRegistry.get("opencode-zen")
+    assert provider is not None
+    assert provider.base_url == "https://opencode.ai/zen/v1"
+    assert provider.api_key_env == "OPENCODE_API_KEY"
+
+
+def test_opencodezen_endpoint_selection():
+    """Zen routes Claude and Qwen models to /messages, GPT/Gemini/Grok to /responses."""
+    from litellm.llms.openai_like.dynamic_config import _resolve_endpoint
+
+    ZEN_BASE = "https://opencode.ai/zen/v1"
+
+    # Claude + Qwen -> /messages
+    for model in ("claude-sonnet-5", "claude-opus-5", "claude-haiku-4-5", "qwen3.7-max", "qwen3.5-plus"):
+        url = _resolve_endpoint(ZEN_BASE, model, "opencode-zen")
+        assert url == f"{ZEN_BASE}/messages", model
+
+    # GPT/Gemini/Grok -> /responses
+    for model in ("gpt-5.6-sol", "gemini-3.6-flash", "grok-4.5"):
+        url = _resolve_endpoint(ZEN_BASE, model, "opencode-zen")
+        assert url == f"{ZEN_BASE}/responses", model
+
+    # MiniMax -> /chat/completions
+    url = _resolve_endpoint(ZEN_BASE, "minimax-m3", "opencode-zen")
+    assert url == f"{ZEN_BASE}/chat/completions"

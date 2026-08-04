@@ -17,45 +17,122 @@ from litellm.types.llms.openai import AllMessageValues
 from .json_loader import SimpleProviderConfig
 
 
-# Endpoint routing for providers that support multiple endpoints
-_MESSAGES_MODELS: set[str] = frozenset(
-    {
-        "minimax-m3",
-        "minimax-m2.7",
-        "minimax-m2.5",
-        "qwen3.8-max",
-        "qwen3.7-max",
-        "qwen3.7-plus",
-        "qwen3.6-plus",
-    }
+# Endpoint routing for providers that support multiple endpoints.
+# Each provider maps models to their correct endpoint path.
+# Models not listed use /chat/completions by default.
+# Source: https://opencode.ai/docs/go/#endpoints and
+#         https://opencode.ai/docs/zen/#endpoints
+_OPENCODE_ENDPOINTS: tuple[tuple[str, tuple[tuple[str, frozenset[str]], ...]], ...] = (
+    (
+        "opencode-go",
+        (
+            (
+                "messages",
+                frozenset(
+                    (
+                        "minimax-m3",
+                        "minimax-m2.7",
+                        "minimax-m2.5",
+                        "qwen3.8-max",
+                        "qwen3.7-max",
+                        "qwen3.7-plus",
+                        "qwen3.6-plus",
+                    )
+                ),
+            ),
+            ("responses", frozenset(("gpt-5.6-luna",))),
+        ),
+    ),
+    (
+        "opencode-zen",
+        (
+            (
+                "messages",
+                frozenset(
+                    (
+                        "claude-fable-5",
+                        "claude-opus-5",
+                        "claude-opus-4-8",
+                        "claude-opus-4-7",
+                        "claude-opus-4-6",
+                        "claude-opus-4-5",
+                        "claude-opus-4-1",
+                        "claude-sonnet-5",
+                        "claude-sonnet-4-6",
+                        "claude-sonnet-4-5",
+                        "claude-sonnet-4",
+                        "claude-haiku-4-5",
+                        "qwen3.7-max",
+                        "qwen3.7-plus",
+                        "qwen3.6-plus",
+                        "qwen3.5-plus",
+                    )
+                ),
+            ),
+            (
+                "responses",
+                frozenset(
+                    (
+                        "gemini-3.6-flash",
+                        "gemini-3.5-flash-lite",
+                        "gemini-3.5-flash",
+                        "gemini-3.1-pro",
+                        "gemini-3-flash",
+                        "gpt-5.6-sol",
+                        "gpt-5.6-terra",
+                        "gpt-5.6-luna",
+                        "gpt-5.5",
+                        "gpt-5.5-pro",
+                        "gpt-5.4",
+                        "gpt-5.4-pro",
+                        "gpt-5.4-mini",
+                        "gpt-5.4-nano",
+                        "gpt-5.3-codex-spark",
+                        "gpt-5.3-codex",
+                        "gpt-5.2",
+                        "gpt-5.2-codex",
+                        "gpt-5.1",
+                        "gpt-5.1-codex-max",
+                        "gpt-5.1-codex",
+                        "gpt-5.1-codex-mini",
+                        "gpt-5",
+                        "gpt-5-codex",
+                        "gpt-5-nano",
+                        "grok-build-0.1",
+                        "grok-4.5",
+                    )
+                ),
+            ),
+        ),
+    ),
 )
 
 
 def _resolve_endpoint(api_base: str | None, model: str, provider_slug: str) -> str:
     """Select the correct endpoint suffix based on model name.
 
-    Some providers (e.g. opencode-go) serve different model families on
-    different endpoint paths — chat completions for OpenAI-style models,
-    Anthropic /messages for others.
+    Some providers serve different model families on different endpoint
+    paths — chat completions for OpenAI-style models, Anthropic /messages
+    for others, and OpenAI /responses for yet others.
     """
     if api_base is None:
         return ""
 
-    # Strip trailing slash for comparison
     clean = api_base.rstrip("/")
 
     # If caller already specified an endpoint, honour it
     if any(clean.endswith(suffix) for suffix in ("/chat/completions", "/messages", "/responses")):
         return clean
 
-    # Default: chat/completions
-    default = f"{clean}/chat/completions"
+    # Look up provider-specific routing
+    for slug, endpoints in _OPENCODE_ENDPOINTS:
+        if slug != provider_slug:
+            continue
+        for endpoint, models in endpoints:
+            if model in models:
+                return f"{clean}/{endpoint}"
 
-    # Override for models that require Anthropic /messages
-    if provider_slug == "opencode-go" and model in _MESSAGES_MODELS:
-        return f"{clean}/messages"
-
-    return default
+    return f"{clean}/chat/completions"
 
 
 def create_config_class(provider: SimpleProviderConfig):

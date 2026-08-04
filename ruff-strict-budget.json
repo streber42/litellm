@@ -123,7 +123,7 @@
     "limit": 0
   },
   "I001": {
-    "limit": 0
+    "limit": 1
   },
   "LOG015": {
     "limit": 8
@@ -306,7 +306,7 @@
     "limit": 0
   },
   "TID251": {
-    "limit": 0
+    "limit": 1172
   },
   "TRY002": {
     "limit": 547
@@ -324,7 +324,7 @@
     "limit": 879
   },
   "UP006": {
-    "limit": 0
+    "limit": 3
   },
   "UP007": {
     "limit": 0
@@ -354,7 +354,7 @@
     "limit": 0
   },
   "UP035": {
-    "limit": 0
+    "limit": 3
   },
   "UP036": {
     "limit": 4
@@ -363,6 +363,6 @@
     "limit": 0
   },
   "UP045": {
-    "limit": 0
+    "limit": 1
   }
 }

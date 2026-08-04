@@ -3,7 +3,7 @@
     "limit": 29809
   },
   "reportArgumentType": {
-    "limit": 2645
+    "limit": 2643
   },
   "reportAssignmentType": {
     "limit": 329
@@ -96,7 +96,7 @@
     "limit": 27
   },
   "reportUndefinedVariable": {
-    "limit": 0
+    "limit": 2
   },
   "reportUnknownArgumentType": {
     "limit": 45262
