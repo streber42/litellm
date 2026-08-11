@@ -8,7 +8,7 @@ import time
 import traceback
 from collections.abc import AsyncIterator, Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Final, NoReturn, Protocol, TypeVar, cast
+from typing import Any, Final, NoReturn, Protocol, TypeVar, Union, cast  # noqa: TID251  # required for internal cast-ok suppression pattern
 
 import anyio
 import httpx

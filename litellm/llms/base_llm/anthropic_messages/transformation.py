@@ -128,6 +128,19 @@ class BaseAnthropicMessagesConfig(ABC):
         """
         return True
 
+    def translate_developer_role_to_system_role(
+        self,
+        messages: list,
+    ) -> list:
+        """
+        Translate ``developer`` role to ``system`` role for non-OpenAI providers.
+        """
+        from litellm.llms.base_llm.base_utils import (
+            map_developer_role_to_system_role,
+        )
+
+        return map_developer_role_to_system_role(messages=messages)
+
     def get_async_streaming_response_iterator(
         self,
         model: str,
@@ -143,6 +156,116 @@ class BaseAnthropicMessagesConfig(ABC):
         from litellm.llms.base_llm.chat.transformation import BaseLLMException
 
         return BaseLLMException(message=error_message, status_code=status_code, headers=headers)
+
+    def get_supported_openai_params(self, model: str) -> list:
+        """OpenAI params that the Anthropic Messages wire format accepts."""
+        return [
+            "max_tokens",
+            "stream",
+            "store",
+            "metadata",
+            "stop",
+            "temperature",
+            "top_p",
+            "tools",
+            "tool_choice",
+            "logprobs",
+            "top_logprobs",
+            "prediction",
+            "response_format",
+            "service_tier",
+        ]
+
+    def map_openai_params(
+        self,
+        non_default_params: dict,
+        optional_params: dict,
+        model: str,
+        drop_params: bool,
+    ) -> dict:
+        """Copy supported OpenAI params from ``non_default_params`` into
+        ``optional_params``.  The base class returns the identity because
+        ``get_optional_params`` already initialised ``optional_params`` with
+        a small hard-coded set (stream, stop, temperature, top_p); this
+        method adds the remaining ones the messages wire format accepts.
+
+        This intentionally does **not** handle params that require
+        provider-specific translation (e.g. tool definitions) — those live
+        on the chat arm or are handled separately.
+        """
+        supported = self.get_supported_openai_params(model=model)
+        for key, value in non_default_params.items():
+            if key in supported:
+                optional_params[key] = value
+        return optional_params
+
+    def should_fake_stream(
+        self,
+        model: str | None,
+        stream: bool | None,
+        custom_llm_provider: str | None = None,
+    ) -> bool:
+        """No-op: messages arm streaming is handled by the messages handler."""
+        return False
+
+    def validate_environment(
+        self,
+        api_key: str | None,
+        headers: dict,
+        model: str,
+        messages: list[Any],
+        optional_params: dict,
+        api_base: str | None = None,
+        litellm_params: dict | None = None,
+        provider_config: "BaseAnthropicMessagesConfig | None" = None,
+    ) -> tuple[dict, str | None]:
+        """Adapter for sync completion path — delegates to
+        ``validate_anthropic_messages_environment``."""
+        return self.validate_anthropic_messages_environment(
+            headers=headers,
+            model=model,
+            messages=messages,
+            optional_params=optional_params,
+            litellm_params=litellm_params or {},
+            api_key=api_key,
+            api_base=api_base,
+        )
+
+    def transform_request(
+        self,
+        model: str,
+        messages: list[dict],
+        optional_params: dict,
+        litellm_params: GenericLiteLLMParams,
+        headers: dict,
+    ) -> dict:
+        """Adapter for sync completion path — delegates to
+        ``transform_anthropic_messages_request``."""
+        return self.transform_anthropic_messages_request(
+            model=model,
+            messages=messages,
+            anthropic_messages_optional_request_params=optional_params,
+            litellm_params=litellm_params,
+            headers=headers,
+        )
+
+    def transform_response(
+        self,
+        model: str,
+        raw_response: httpx.Response,
+        logging_obj: Any,  # noqa: ANN401  # pass-through adapter to transform_anthropic_messages_response
+        custom_llm_provider: str,
+        response_obj: dict | None = None,
+        conversation_id: str | None = None,
+        client_response: Any = None,  # noqa: ANN401  # optional payload for debug logging
+    ) -> Any:  # noqa: ANN401  # pass-through adapter — caller determines response type
+        """Adapter for sync completion path — delegates to
+        ``transform_anthropic_messages_response``."""
+        return self.transform_anthropic_messages_response(
+            model=model,
+            raw_response=raw_response,
+            logging_obj=logging_obj,
+        )
 
     @property
     def max_retry_on_anthropic_messages_http_error(self) -> int:

@@ -1,7 +1,7 @@
 "use client";
 
 import { Form } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AddModelForm from "@/components/add_model/AddModelForm";
 import { handleAddModelSubmit } from "@/components/add_model/handle_add_model_submit";
@@ -23,6 +23,10 @@ export default function AddModelPanel() {
   const [selectedProvider, setSelectedProvider] = useState<Providers>(Providers.Anthropic);
   const [providerModels, setProviderModels] = useState<string[]>([]);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+
+  useEffect(() => {
+    setProviderModels(getProviderModels(selectedProvider, modelCostMapData));
+  }, [selectedProvider, modelCostMapData]);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["models", "list"] });
 

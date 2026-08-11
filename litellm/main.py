@@ -3359,6 +3359,122 @@ def _complete_openrouter(ctx: _CompletionDispatchContext) -> _CompletionDispatch
     return response
 
 
+def _complete_opencode(
+    ctx: _CompletionDispatchContext,
+) -> _CompletionDispatchResult:
+    acompletion: Final = ctx.acompletion
+    api_base = ctx.api_base
+    api_key = ctx.api_key
+    client: Final = ctx.client
+    custom_llm_provider: Final = ctx.custom_llm_provider
+    headers = ctx.headers
+    litellm_params: Final = ctx.litellm_params
+    logging: Final = ctx.logging
+    messages: Final = ctx.messages
+    model: Final = ctx.model
+    model_response: Final = ctx.model_response
+    optional_params: Final = ctx.optional_params
+    shared_session: Final = ctx.shared_session
+    stream: Final = ctx.stream
+    timeout: Final = ctx.timeout
+
+    surface = "go" if custom_llm_provider == "opencode_go" else "zen"
+    surface_upper = surface.upper()
+    _base_url = "https://opencode.ai/zen/go/v1" if surface == "go" else "https://opencode.ai/zen/v1"
+    api_base = (
+        api_base
+        or getattr(litellm, f"opencode_{surface}_api_base", None)
+        or litellm.api_base
+        or litellm.opencode_api_base
+        or get_secret_str(f"OPENCODE_{surface_upper}_API_BASE")
+        or _base_url
+    )
+
+    api_key = (
+        api_key
+        or litellm.api_key
+        or getattr(litellm, f"opencode_{surface}_api_key", None)
+        or get_secret_str(f"OPENCODE_{surface_upper}_API_KEY")
+        or get_secret_str("OPENCODE_API_KEY")
+    )
+
+    base_headers: Final = headers or litellm.headers or {}
+    _headers: Final = {**base_headers, "Authorization": f"Bearer {api_key}"} if api_key is not None else base_headers
+
+    # Messages-model routing: use async_anthropic_messages_handler.
+    # The sync completion() handler has no messages-arm path (raises ValueError),
+    # so we run the async handler here, either via asyncio.run() (sync path) or
+    # by returning the coroutine for acompletion to await on the main loop.
+    from litellm.llms.opencode.chat.messages_transformation import is_messages_model
+
+    if is_messages_model(surface, model):
+        from litellm.llms.opencode.chat.messages_transformation import (
+            OpenCodeMessagesConfig,
+        )
+
+        provider_config = OpenCodeMessagesConfig(surface=surface)
+        # Messages config appends ``/v1/messages``; chat arm ``api_base``
+        # ends with ``/v1`` (or ``/go/v1``).  Strip the trailing segment so
+        # the config can safely append its own path without duplication.
+        _messages_api_base = api_base
+        if _messages_api_base is not None:
+            for _suffix in ("/go/v1", "/v1"):
+                if _messages_api_base.rstrip("/").endswith(_suffix):
+                    _messages_api_base = _messages_api_base.rstrip("/").removesuffix(_suffix)
+                    break
+
+        messages_handler_coro = base_llm_http_handler.async_anthropic_messages_handler(
+            model=model,
+            messages=messages,
+            anthropic_messages_provider_config=provider_config,
+            anthropic_messages_optional_request_params=optional_params,
+            custom_llm_provider=provider_config.custom_llm_provider,
+            litellm_params=litellm_params,
+            logging_obj=logging,
+            client=client,
+            extra_headers=None,  # messages config sets its own auth headers
+            api_key=api_key,
+            api_base=_messages_api_base,
+            stream=stream,
+            kwargs=None,
+        )
+        if acompletion is True:
+            # Return the coroutine so acompletion awaits it on the main event
+            # loop. Running asyncio.run() here (in the executor thread) binds the
+            # aiohttp session/response to a throwaway loop, and streaming that
+            # response on the caller's loop raises "Future attached to a
+            # different loop". Mirrors the chat arm's acompletion path.
+            logging.post_call(input=messages, api_key=api_key, original_response=messages_handler_coro)
+            return messages_handler_coro
+        response = asyncio.run(messages_handler_coro)
+        logging.post_call(input=messages, api_key=api_key, original_response=response)
+        return response
+
+    ## COMPLETION CALL (chat arm)
+    response = base_llm_http_handler.completion(
+        model=model,
+        stream=stream,
+        messages=messages,
+        acompletion=acompletion,
+        api_base=api_base,
+        model_response=model_response,
+        optional_params=optional_params,
+        litellm_params=litellm_params,
+        shared_session=shared_session,
+        custom_llm_provider=f"opencode_{surface}",
+        timeout=timeout,
+        headers=_headers,
+        encoding=_get_encoding(),
+        api_key=api_key,
+        logging_obj=logging,
+        client=client,
+    )
+    ## LOGGING
+    logging.post_call(input=messages, api_key=api_key, original_response=response)
+
+    return response
+
+
 def _complete_vercel_ai_gateway(
     ctx: _CompletionDispatchContext,
 ) -> _CompletionDispatchResult:
@@ -5615,6 +5731,8 @@ def completion(
             response = _complete_minimax(_dispatch_ctx)
         elif custom_llm_provider == "hosted_vllm":
             response = _complete_hosted_vllm(_dispatch_ctx)
+        elif custom_llm_provider in ("opencode_zen", "opencode_go"):
+            response = _complete_opencode(_dispatch_ctx)
         elif (
             model in litellm.open_ai_chat_completion_models
             or custom_llm_provider == "custom_openai"

@@ -62,6 +62,7 @@ import voyageLogo from "../../public/assets/logos/voyage.webp";
 import watsonxLogo from "../../public/assets/logos/watsonx.svg";
 import xaiLogo from "../../public/assets/logos/xai.svg";
 import xinferenceLogo from "../../public/assets/logos/xinference.svg";
+import opencodeLogo from "../../public/assets/logos/opencode.svg";
 
 export enum Providers {
   A2A_Agent = "A2A Agent",
@@ -133,6 +134,8 @@ export enum Providers {
   Ollama = "Ollama",
   OLLAMA_CHAT = "Ollama Chat",
   OOBABOOGA = "Oobabooga",
+  OpenCode_Go = "OpenCode Go",
+  OpenCode_Zen = "OpenCode Zen",
   OpenAI = "OpenAI",
   OPENAI_LIKE = "Openai Like",
   OpenAI_Compatible = "OpenAI-Compatible Chat Completions (Together AI, vLLM, etc.)",
@@ -241,6 +244,8 @@ export const provider_map: Record<string, string> = {
   Ollama: "ollama",
   OLLAMA_CHAT: "ollama_chat",
   OOBABOOGA: "oobabooga",
+  OpenCode_Go: "opencode_go",
+  OpenCode_Zen: "opencode_zen",
   OpenAI: "openai",
   OPENAI_LIKE: "openai_like",
   OpenAI_Compatible: "openai",
@@ -337,6 +342,8 @@ export const providerLogoMap: Partial<Record<Providers, string>> = {
   [Providers.Ollama]: ollamaLogo.src,
   [Providers.OLLAMA_CHAT]: ollamaLogo.src,
   [Providers.OOBABOOGA]: openaiSmallLogo.src,
+  [Providers.OpenCode_Go]: opencodeLogo.src,
+  [Providers.OpenCode_Zen]: opencodeLogo.src,
   [Providers.OpenAI]: openaiSmallLogo.src,
   [Providers.OPENAI_LIKE]: openaiSmallLogo.src,
   [Providers.OpenAI_Text]: openaiSmallLogo.src,
@@ -439,6 +446,10 @@ export const getPlaceholder = (selectedProvider: string): string => {
     return "cursor/claude-4-sonnet";
   } else if (selectedProvider === Providers.ZAI) {
     return "zai/glm-4.5";
+  } else if (selectedProvider === Providers.OpenCode_Go) {
+    return "opencode_go/gpt-5.6-luna";
+  } else if (selectedProvider === Providers.OpenCode_Zen) {
+    return "opencode_zen/gpt-5.6-sol";
   } else {
     return "gpt-3.5-turbo";
   }
