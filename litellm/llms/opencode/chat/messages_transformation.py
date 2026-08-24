@@ -220,7 +220,10 @@ class OpenCodeMessagesConfig(AnthropicMessagesConfig):
         return resolved_headers, resolved_base_url
 
     def get_error_class(
-        self, error_message: str, status_code: int, headers: dict | httpx.Headers  # mutable-ok: signature must match AnthropicMessagesConfig
+        self,
+        error_message: str,
+        status_code: int,
+        headers: dict | httpx.Headers,  # mutable-ok: signature must match AnthropicMessagesConfig
     ) -> BaseLLMException:
         return OpenCodeException(message=error_message, status_code=status_code, headers=headers)
 
@@ -248,7 +251,10 @@ class OpenCodeMessagesConfig(AnthropicMessagesConfig):
             else None
         )
         params: Final = (
-            {**anthropic_messages_optional_request_params, "max_tokens": default_max_tokens}  # mutable-ok: base config requires a mutable dict
+            {
+                **anthropic_messages_optional_request_params,
+                "max_tokens": default_max_tokens,
+            }  # mutable-ok: base config requires a mutable dict
             if default_max_tokens is not None
             else anthropic_messages_optional_request_params
         )

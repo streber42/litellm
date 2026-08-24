@@ -157,7 +157,9 @@ class BaseAnthropicMessagesConfig(ABC):
 
         return BaseLLMException(message=error_message, status_code=status_code, headers=headers)
 
-    def get_supported_openai_params(self, model: str) -> list:  # mutable-ok: signature must match the chat-config interface
+    def get_supported_openai_params(
+        self, model: str
+    ) -> list:  # mutable-ok: signature must match the chat-config interface
         """OpenAI params that the Anthropic Messages wire format accepts."""
         return [  # mutable-ok: list literal, interface requires a list
             "max_tokens",

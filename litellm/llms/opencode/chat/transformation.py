@@ -99,7 +99,10 @@ class OpenCodeConfig(OpenAIGPTConfig):
         return f"{base.rstrip('/')}/chat/completions"
 
     def get_error_class(
-        self, error_message: str, status_code: int, headers: dict | httpx.Headers  # mutable-ok: signature must match OpenAIGPTConfig
+        self,
+        error_message: str,
+        status_code: int,
+        headers: dict | httpx.Headers,  # mutable-ok: signature must match OpenAIGPTConfig
     ) -> BaseLLMException:
         return OpenCodeException(message=error_message, status_code=status_code, headers=headers)
 
