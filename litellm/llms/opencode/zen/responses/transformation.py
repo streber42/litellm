@@ -6,7 +6,11 @@ with OpenAI-compatible request/response shape.  Uses ``Bearer`` auth.
 """
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Final  # noqa: TID251  # OpenAI Responses API wire format uses Any in param/return shapes
+from typing import (  # noqa: TID251  # OpenAI Responses API wire format uses Any in param/return shapes
+    TYPE_CHECKING,
+    Any,
+    Final,
+)
 
 import litellm
 from litellm.llms.openai.responses.transformation import OpenAIResponsesAPIConfig
