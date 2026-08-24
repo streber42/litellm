@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import AddModelForm from "@/components/add_model/AddModelForm";
@@ -29,6 +29,10 @@ export default function AddModelPanel() {
   const [selectedProvider, setSelectedProvider] = useState<Providers>(Providers.Anthropic);
   const [providerModels, setProviderModels] = useState<string[]>([]);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+
+  useEffect(() => {
+    setProviderModels(getProviderModels(selectedProvider, modelCostMapData));
+  }, [selectedProvider, modelCostMapData]);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["models", "list"] });
 

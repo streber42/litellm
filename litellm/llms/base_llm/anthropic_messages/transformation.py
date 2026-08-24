@@ -128,6 +128,19 @@ class BaseAnthropicMessagesConfig(ABC):
         """
         return True
 
+    def translate_developer_role_to_system_role(
+        self,
+        messages: list,  # mutable-ok: signature must match the chat-config interface
+    ) -> list:  # mutable-ok: signature must match the chat-config interface
+        """
+        Translate ``developer`` role to ``system`` role for non-OpenAI providers.
+        """
+        from litellm.llms.base_llm.base_utils import (
+            map_developer_role_to_system_role,
+        )
+
+        return map_developer_role_to_system_role(messages=messages)
+
     def get_async_streaming_response_iterator(
         self,
         model: str,
@@ -143,6 +156,48 @@ class BaseAnthropicMessagesConfig(ABC):
         from litellm.llms.base_llm.chat.transformation import BaseLLMException
 
         return BaseLLMException(message=error_message, status_code=status_code, headers=headers)
+
+    def get_supported_openai_params(self, model: str) -> list:  # mutable-ok: signature must match the chat-config interface
+        """OpenAI params that the Anthropic Messages wire format accepts."""
+        return [  # mutable-ok: list literal, interface requires a list
+            "max_tokens",
+            "stream",
+            "store",
+            "metadata",
+            "stop",
+            "temperature",
+            "top_p",
+            "tools",
+            "tool_choice",
+            "logprobs",
+            "top_logprobs",
+            "prediction",
+            "response_format",
+            "service_tier",
+        ]
+
+    def map_openai_params(
+        self,
+        non_default_params: dict,  # mutable-ok: signature must match the chat-config interface
+        optional_params: dict,  # mutable-ok: signature must match the chat-config interface
+        model: str,
+        drop_params: bool,
+    ) -> dict:  # mutable-ok: signature must match the chat-config interface
+        """Copy supported OpenAI params from ``non_default_params`` into
+        ``optional_params``.  The base class returns the identity because
+        ``get_optional_params`` already initialised ``optional_params`` with
+        a small hard-coded set (stream, stop, temperature, top_p); this
+        method adds the remaining ones the messages wire format accepts.
+
+        This intentionally does **not** handle params that require
+        provider-specific translation (e.g. tool definitions) — those live
+        on the chat arm or are handled separately.
+        """
+        supported = self.get_supported_openai_params(model=model)
+        return {  # mutable-ok: dict literal for the merged optional params
+            **optional_params,
+            **{k: v for k, v in non_default_params.items() if k in supported},
+        }
 
     @property
     def max_retry_on_anthropic_messages_http_error(self) -> int:

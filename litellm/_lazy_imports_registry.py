@@ -131,6 +131,7 @@ LLM_CONFIG_NAMES: Final = (
     "OobaboogaConfig",
     "MaritalkConfig",
     "OpenrouterConfig",
+    "OpenCodeConfig",
     "DataRobotConfig",
     "AnthropicConfig",
     "BedrockClaudePlatformConfig",
@@ -619,6 +620,7 @@ _LLM_CONFIGS_IMPORT_MAP: Final = {
     "OobaboogaConfig": (".llms.oobabooga.chat.transformation", "OobaboogaConfig"),
     "MaritalkConfig": (".llms.maritalk", "MaritalkConfig"),
     "OpenrouterConfig": (".llms.openrouter.chat.transformation", "OpenrouterConfig"),
+    "OpenCodeConfig": (".llms.opencode.chat.transformation", "OpenCodeConfig"),
     "DataRobotConfig": (".llms.datarobot.chat.transformation", "DataRobotConfig"),
     "AnthropicConfig": (".llms.anthropic.chat.transformation", "AnthropicConfig"),
     "BedrockClaudePlatformConfig": (
