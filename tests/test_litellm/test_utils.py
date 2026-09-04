@@ -1012,6 +1012,7 @@ def test_aaamodel_prices_and_context_window_json_is_valid():
                         "embedding",
                         "guardrail",
                         "image_generation",
+                        "messages",
                         "video_generation",
                         "moderation",
                         "rerank",
